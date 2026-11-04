@@ -39,13 +39,11 @@
     });
   }
 
-  // Close modals with Escape key
+  // การ์ดที่เป็น role="button" กด Enter / Space ได้ (Esc ปิด modal อยู่ใน ui.js)
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.active').forEach(m => {
-        m.classList.remove('active');
-        document.body.style.overflow = '';
-      });
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[role="button"]')) {
+      e.preventDefault();
+      e.target.click();
     }
   });
 })();
