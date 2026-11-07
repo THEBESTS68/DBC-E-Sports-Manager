@@ -41,7 +41,7 @@ window.createFirebaseStore = function (cfg) {
       async login({ passcode }) {
         const ok = (await sha256(passcode || '')) === cfg.adminPasscodeSha256;
         if (ok) setAdmin(true);
-        return ok;
+        return ok ? { ok } : { ok, message: 'รหัสผ่านไม่ถูกต้อง' };
       },
       async logout() { setAdmin(false); },
       isAdmin() { return admin; },

@@ -68,7 +68,7 @@ function applyRoute() {
     document.body.setAttribute('data-theme', next || 'default');
     $('homeMenu').style.display = next ? 'none' : '';
     $('profileHub').style.display = next ? 'none' : '';
-    $('btnBack').style.display = next ? 'block' : 'none';
+    $('btnBack').style.display = next ? '' : 'none';
     document.querySelectorAll('.module').forEach(m => m.classList.remove('active', 'page-fade-in'));
     if (next) {
       $('mainTitle').textContent = GAME_META[next].title;
@@ -92,6 +92,7 @@ function applyRoute() {
 // =====================================================================
 function render() {
   renderAuth();
+  if (typeof renderReviewPanel === 'function') renderReviewPanel();
   if (!currentGame) { renderProfiles(); return; }
   renderEntrants(currentGame);
   if (currentGame === 'ff') renderFFTable(); else renderBracket(currentGame);
@@ -101,24 +102,17 @@ function renderAuth() {
   const admin = isAdmin();
   document.body.classList.toggle('viewer-mode', !admin);
   $('authContainer').innerHTML = admin
-    ? `<button class="btn-auth admin" onclick="logoutAdmin()">🔓 ออกจากระบบ (กรรมการ)</button>`
-    : `<button class="btn-auth viewer" onclick="loginAdmin()">🔒 เข้าสู่ระบบกรรมการ</button>`;
+    ? `<button class="lens lens-sm" onclick="logoutAdmin()" title="ออกจากระบบกรรมการ">🔓 <span class="hide-sm">ออกจากระบบ</span></button>`
+    : `<button class="lens lens-sm" onclick="loginAdmin()" title="สำหรับกรรมการ">🔒 <span class="hide-sm">กรรมการ</span></button>`;
 }
 
 // =====================================================================
 //  AUTH
 // =====================================================================
-async function loginAdmin() {
+// หน้าต่างเข้าสู่ระบบ / สมัครกรรมการ อยู่ใน registration.js
+function loginAdmin() {
   if (!store) return UI.toast('ยังเชื่อมต่อฐานข้อมูลไม่สำเร็จ', 'error');
-  const fields = store.auth.kind === 'email'
-    ? [{ name: 'email', label: 'อีเมล', type: 'email', autocomplete: 'username' },
-       { name: 'password', label: 'รหัสผ่าน', type: 'password', autocomplete: 'current-password' }]
-    : [{ name: 'passcode', label: 'รหัสผ่านกรรมการ', type: 'password', autocomplete: 'current-password' }];
-  const ok = await UI.dialog({
-    title: '🔒 เข้าสู่ระบบกรรมการ', fields, okText: 'เข้าสู่ระบบ',
-    validate: async v => (await store.auth.login(v)) ? null : 'ข้อมูลเข้าสู่ระบบไม่ถูกต้อง'
-  });
-  if (ok) { UI.toast('เข้าสู่ระบบกรรมการแล้ว'); render(); }
+  openAuth('login');
 }
 
 async function logoutAdmin() {
@@ -305,9 +299,9 @@ function slotHTML(m, slot, rIdx, mIdx, playable, admin) {
   return `<div class="slot${won ? ' won' : ''}${m.winner && !won ? ' lost' : ''}">
     <span class="slot-name">${escapeHTML(name)}</span>
     <div class="score-badge">
-      ${editable && score > 0 ? `<button type="button" class="score-btn minus" data-score="${ref},-1" aria-label="ลดคะแนน ${escapeHTML(name)}">−</button>` : ''}
+      ${editable && score > 0 ? `<button type="button" class="lens score-btn minus" data-score="${ref},-1" aria-label="ลดคะแนน ${escapeHTML(name)}">−</button>` : ''}
       <span class="score-num">${playable ? score : ''}</span>
-      ${editable ? `<button type="button" class="score-btn" data-score="${ref},1" aria-label="เพิ่มคะแนน ${escapeHTML(name)}">+</button>` : ''}
+      ${editable ? `<button type="button" class="lens score-btn" data-score="${ref},1" aria-label="เพิ่มคะแนน ${escapeHTML(name)}">+</button>` : ''}
     </div></div>`;
 }
 
@@ -496,8 +490,10 @@ function renderProfiles() {
     .sort((a, b) => a.name.localeCompare(b.name, 'th'));
   const card = (p, i) => `<button type="button" class="profile-card" style="animation-delay:${Math.min(i * 40, 400)}ms" data-profile-id="${escapeHTML(p.id)}">
       <div class="profile-avatar">${avatarHTML(p)}</div>
-      <div class="profile-name">${escapeHTML(p.name)}</div>
-      <div class="profile-sub">${p.type === 'team' ? '🛡️ ทีม' : '👤 ผู้เล่น'} • ${escapeHTML(GAME_META[p.game]?.label || '')}</div>
+      <div>
+        <div class="profile-name">${escapeHTML(p.name)}</div>
+        <div class="profile-sub">${p.type === 'team' ? '🛡️ ทีม' : '👤 ผู้เล่น'} • ${escapeHTML(GAME_META[p.game]?.label || '')}${p.team && p.type === 'player' ? ' • ' + escapeHTML(p.team) : ''}</div>
+      </div>
     </button>`;
   const players = list.filter(p => p.type === 'player'), teams = list.filter(p => p.type === 'team');
   const empty = what => `<div class="profile-empty">${q || g ? 'ไม่พบ' + what + 'ที่ตรงกับการค้นหา' : 'ยังไม่มีข้อมูล' + what + 'ในระบบ'}</div>`;
@@ -625,8 +621,8 @@ function openProfileDetail(id) {
     <div class="detail-info">${info}</div>
     ${extra}
     ${admin ? `<div class="detail-actions">
-      <button type="button" class="profile-btn grow" data-edit-profile="${escapeHTML(p.id)}">✏️ แก้ไขข้อมูล</button>
-      <button type="button" class="profile-btn danger" data-delete-profile="${escapeHTML(p.id)}">🗑️ ลบ</button>
+      <button type="button" class="lens grow" data-edit-profile="${escapeHTML(p.id)}">✏️ แก้ไขข้อมูล</button>
+      <button type="button" class="lens lens-danger" data-delete-profile="${escapeHTML(p.id)}">🗑️ ลบ</button>
     </div>` : ''}`;
   UI.openModal('profileDetailModal');
 }

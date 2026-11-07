@@ -3,171 +3,207 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#030508">
+  <meta name="theme-color" content="#07060f">
   <meta name="description" content="ระบบจัดการทัวร์นาเมนต์ E-Sport ของชมรม DBC NextGen — eFootball, Garena RoV, Free Fire">
   <title>DBC NextGen E-Sport - Tournament Manager</title>
   <link rel="icon" href="images/icon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="default" class="viewer-mode">
 
-  <nav>
-    <div class="nav-left">
-      <a href="https://www.facebook.com/share/1KJfy95NLv/?mibextid=wwXIfr" target="_blank" rel="noopener" class="badge" id="navBadge">DBC NextGen E-Sport</a>
+  <!-- Liquid glass refraction (ใช้เฉพาะเบราว์เซอร์ที่รองรับ — ดู effects.js) -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <filter id="liquid-lens" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="11" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="2.5" result="soft"/>
+      <feDisplacementMap in="SourceGraphic" in2="soft" scale="22" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+
+  <!-- พื้นหลังเคลื่อนไหว ให้กระจกมีสีให้หักเห -->
+  <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+
+  <nav class="topbar glass">
+    <a href="https://www.facebook.com/share/1KJfy95NLv/?mibextid=wwXIfr" target="_blank" rel="noopener" class="brand" id="navBadge">
+      <img src="images/icon.png" alt="" class="brand-logo"><span>DBC NextGen <b>E-Sport</b></span>
+    </a>
+    <div class="topbar-actions">
+      <span id="dbStatus" class="status-pill" role="status">กำลังเชื่อมต่อ…</span>
+      <button class="lens lens-accent" id="btnRegister" onclick="openRegister()">📝 <span class="hide-sm">ลงทะเบียนนักกีฬา</span><span class="show-sm">ลงทะเบียน</span></button>
       <div id="authContainer"></div>
     </div>
-    <div id="dbStatus" role="status">กำลังเชื่อมต่อ…</div>
-    <button class="btn-back" id="btnBack" onclick="goHome()" style="display:none">◀ กลับหน้าหลัก</button>
   </nav>
 
   <header id="mainHeader">
+    <button class="lens lens-sm" id="btnBack" onclick="goHome()" style="display:none">← กลับหน้าหลัก</button>
     <h1 id="mainTitle">Tournament Manager</h1>
-    <div class="subtitle" id="mainSubtitle">เลือกระบบจัดการการแข่งขันที่ต้องการ</div>
+    <p class="subtitle" id="mainSubtitle">เลือกระบบจัดการการแข่งขันที่ต้องการ</p>
   </header>
 
-  <div id="homeMenu">
-    <div class="game-card ef" role="button" tabindex="0" aria-label="eFootball" onclick="openGame('ef')">
-      <div class="game-icon"><img src="images/icon-ef.png" alt="eFootball"></div>
-      <div class="game-title"></div>
-      <div class="game-desc"></div>
-    </div>
-    <div class="game-card rov" role="button" tabindex="0" aria-label="Garena RoV" onclick="openGame('rov')">
-      <div class="game-icon"><img src="images/icon-rov.png" alt="RoV"></div>
-      <div class="game-title"></div>
-      <div class="game-desc"></div>
-    </div>
-    <div class="game-card ff" role="button" tabindex="0" aria-label="Free Fire" onclick="openGame('ff')">
-      <div class="game-icon"><img src="images/icon-ff.png" alt="Free Fire"></div>
-      <div class="game-title"></div>
-    </div>
-  </div>
-
-  <section id="profileHub" class="profile-hub">
-    <div class="profile-toolbar">
-      <div><h2>ข้อมูลผู้เล่นและทีม</h2><div class="profile-sub">ค้นหาและดูโปรไฟล์นักกีฬาของชมรม</div></div>
-      <div class="profile-actions admin-only">
-        <button class="profile-btn" onclick="openPlayerForm()">👤 เพิ่มผู้เล่น</button>
-        <button class="profile-btn" onclick="openTeamForm()">🛡️ เพิ่มทีม</button>
-        <button class="profile-btn" onclick="exportData()" title="ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ JSON">⬇️ สำรองข้อมูล</button>
+  <main class="page">
+    <div id="homeMenu">
+      <div class="game-card ef" role="button" tabindex="0" aria-label="เปิดระบบ eFootball" onclick="openGame('ef')">
+        <div class="game-cover"><img src="images/efootball.jpg" alt="" loading="lazy"></div>
+        <div class="game-caption">
+          <img class="game-icon" src="images/icon-ef.png" alt="">
+          <div><div class="game-title">eFootball</div><div class="game-desc">1 vs 1 • Single Elimination BO3</div></div>
+          <span class="game-go" aria-hidden="true">→</span>
+        </div>
       </div>
-      <div class="profile-filters">
-        <input id="profileSearch" type="search" placeholder="🔍 ค้นหาชื่อผู้เล่น / ทีม…" aria-label="ค้นหาโปรไฟล์">
-        <select id="profileFilter" aria-label="กรองตามเกม">
-          <option value="">ทุกเกม</option>
-          <option value="ef">⚽ eFootball</option>
-          <option value="rov">⚔️ Garena RoV</option>
-          <option value="ff">🪂 Free Fire</option>
-        </select>
+      <div class="game-card rov" role="button" tabindex="0" aria-label="เปิดระบบ Garena RoV" onclick="openGame('rov')">
+        <div class="game-cover"><img src="images/rov.jpg" alt="" loading="lazy"></div>
+        <div class="game-caption">
+          <img class="game-icon" src="images/icon-rov.png" alt="">
+          <div><div class="game-title">Garena RoV</div><div class="game-desc">5 vs 5 • Single Elimination BO3</div></div>
+          <span class="game-go" aria-hidden="true">→</span>
+        </div>
+      </div>
+      <div class="game-card ff" role="button" tabindex="0" aria-label="เปิดระบบ Free Fire" onclick="openGame('ff')">
+        <div class="game-cover"><img src="images/freefire.jpg" alt="" loading="lazy"></div>
+        <div class="game-caption">
+          <img class="game-icon" src="images/icon-ff.png" alt="">
+          <div><div class="game-title">Free Fire</div><div class="game-desc">Squad • คะแนนสะสม 3 แมตช์</div></div>
+          <span class="game-go" aria-hidden="true">→</span>
+        </div>
       </div>
     </div>
 
-    <h3 class="section-title players">👤 ผู้เล่น (Players) <span class="count" id="playerCount"></span></h3>
-    <div id="playerGrid" class="profile-grid"></div>
+    <!-- แผงอนุมัติคำขอ (เฉพาะกรรมการ) -->
+    <section id="reviewPanel" class="review-panel glass admin-only" hidden>
+      <div class="panel-head">
+        <h2>📥 คำขอที่รออนุมัติ <span class="count-badge" id="reviewCount">0</span></h2>
+      </div>
+      <div class="review-grid">
+        <div>
+          <h3 class="review-title">นักกีฬา / ทีม</h3>
+          <div id="regList" class="review-list"></div>
+        </div>
+        <div>
+          <h3 class="review-title">สมัครเป็นกรรมการ</h3>
+          <div id="refList" class="review-list"></div>
+        </div>
+      </div>
+    </section>
 
-    <h3 class="section-title teams">🛡️ ทีม (Teams) <span class="count" id="teamCount"></span></h3>
-    <div id="teamGrid" class="profile-grid"></div>
-  </section>
+    <section id="profileHub" class="profile-hub">
+      <div class="profile-toolbar glass">
+        <div class="toolbar-head">
+          <div><h2>ข้อมูลผู้เล่นและทีม</h2><div class="profile-sub">ค้นหาและดูโปรไฟล์นักกีฬาของชมรม</div></div>
+          <div class="profile-actions admin-only">
+            <button class="lens lens-sm" onclick="openPlayerForm()">👤 เพิ่มผู้เล่น</button>
+            <button class="lens lens-sm" onclick="openTeamForm()">🛡️ เพิ่มทีม</button>
+            <button class="lens lens-sm" onclick="exportData()" title="ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ JSON">⬇️ สำรองข้อมูล</button>
+          </div>
+        </div>
+        <div class="profile-filters">
+          <input id="profileSearch" class="field" type="search" placeholder="🔍 ค้นหาชื่อผู้เล่น / ทีม…" aria-label="ค้นหาโปรไฟล์">
+          <select id="profileFilter" class="field" aria-label="กรองตามเกม">
+            <option value="">ทุกเกม</option>
+            <option value="ef">⚽ eFootball</option>
+            <option value="rov">⚔️ Garena RoV</option>
+            <option value="ff">🪂 Free Fire</option>
+          </select>
+        </div>
+      </div>
 
-  <!-- ================= eFootball ================= -->
-  <div id="module-ef" class="module">
-    <div class="rules-header-flex">
-      <button class="btn-full-rules" onclick="openRulesModal('ef')">📜 กติกา eFootball ฉบับเต็ม</button>
-    </div>
-    <div class="control-panel">
-      <div class="profile-picker-title">👤 ผู้เข้าแข่งขัน<span class="entrant-count" id="entrant-count-ef"></span></div>
-      <div class="profile-selector">
-        <select id="profilePicker-ef" aria-label="เลือกผู้เล่น" onchange="addProfileToGame('ef', this.value)"></select>
-      </div>
-      <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
-      <div id="selected-list-ef" class="selected-list"></div>
-      <div class="stale-hint" id="stale-hint-ef" hidden>⚠️ รายชื่อเปลี่ยนไปจากสายแข่งปัจจุบัน กด "สร้างสายแข่ง" เพื่อสุ่มใหม่</div>
-      <div class="btn-group">
-        <button class="btn-primary" onclick="generateBracket('ef')">🎲 สร้างสายแข่ง</button>
-        <button class="btn-reset" onclick="confirmReset('ef')">ล้างข้อมูล</button>
-      </div>
-    </div>
-    <div class="podium-box" id="podium-ef">
-      <div class="podium-title">🏆 TOURNAMENT MEDALISTS</div>
-      <div class="medals-grid">
-        <div class="medal-card"><div class="medal-icon">🥇</div><div class="medal-type gold">เหรียญทอง</div><div class="medal-player" id="gold-ef">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥈</div><div class="medal-type silver">เหรียญเงิน</div><div class="medal-player" id="silver-ef">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥉</div><div class="medal-type bronze">เหรียญทองแดง</div><div class="medal-player" id="bronze-ef">-</div></div>
-      </div>
-    </div>
-    <div class="bracket-wrapper" id="wrapper-ef"><svg class="connector-svg" id="svg-ef"></svg></div>
-  </div>
+      <h3 class="section-title">👤 ผู้เล่น <span class="count" id="playerCount"></span></h3>
+      <div id="playerGrid" class="profile-grid"></div>
 
-  <!-- ================= RoV ================= -->
-  <div id="module-rov" class="module">
-    <div class="rules-header-flex">
-      <button class="btn-full-rules" onclick="openRulesModal('rov')">📜 กติกา Garena RoV ฉบับเต็ม</button>
-    </div>
-    <div class="control-panel">
-      <div class="profile-picker-title">🛡️ ทีมที่เข้าแข่งขัน<span class="entrant-count" id="entrant-count-rov"></span></div>
-      <div class="profile-selector">
-        <select id="profilePicker-rov" aria-label="เลือกทีม" onchange="addProfileToGame('rov', this.value)"></select>
-      </div>
-      <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
-      <div id="selected-list-rov" class="selected-list"></div>
-      <div class="stale-hint" id="stale-hint-rov" hidden>⚠️ รายชื่อเปลี่ยนไปจากสายแข่งปัจจุบัน กด "สร้างสายแข่ง" เพื่อสุ่มใหม่</div>
-      <div class="btn-group">
-        <button class="btn-primary" onclick="generateBracket('rov')">⚔️ สร้างสายแข่ง</button>
-        <button class="btn-reset" onclick="confirmReset('rov')">ล้างข้อมูล</button>
-      </div>
-    </div>
-    <div class="podium-box" id="podium-rov">
-      <div class="podium-title">🏆 TOURNAMENT MEDALISTS</div>
-      <div class="medals-grid">
-        <div class="medal-card"><div class="medal-icon">🥇</div><div class="medal-type gold">เหรียญทอง</div><div class="medal-player" id="gold-rov">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥈</div><div class="medal-type silver">เหรียญเงิน</div><div class="medal-player" id="silver-rov">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥉</div><div class="medal-type bronze">เหรียญทองแดง</div><div class="medal-player" id="bronze-rov">-</div></div>
-      </div>
-    </div>
-    <div class="bracket-wrapper" id="wrapper-rov"><svg class="connector-svg" id="svg-rov"></svg></div>
-  </div>
+      <h3 class="section-title">🛡️ ทีม <span class="count" id="teamCount"></span></h3>
+      <div id="teamGrid" class="profile-grid"></div>
+    </section>
 
-  <!-- ================= Free Fire ================= -->
-  <div id="module-ff" class="module">
-    <div class="rules-header-flex">
-      <button class="btn-full-rules" onclick="openRulesModal('ff')">📜 กติกา Free Fire ฉบับเต็ม</button>
-    </div>
-    <div class="control-panel">
-      <div class="profile-picker-title">🪂 ทีมที่เข้าแข่งขัน<span class="entrant-count" id="entrant-count-ff"></span></div>
-      <div class="profile-selector">
-        <select id="profilePicker-ff" aria-label="เลือกทีม" onchange="addProfileToGame('ff', this.value)"></select>
+    <!-- ================= eFootball ================= -->
+    <div id="module-ef" class="module">
+      <button class="lens lens-sm rules-btn" onclick="openRulesModal('ef')">📜 กติกา eFootball ฉบับเต็ม</button>
+      <div class="control-panel glass">
+        <div class="panel-label">👤 ผู้เข้าแข่งขัน<span class="entrant-count" id="entrant-count-ef"></span></div>
+        <select id="profilePicker-ef" class="field" aria-label="เลือกผู้เล่น" onchange="addProfileToGame('ef', this.value)"></select>
+        <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
+        <div id="selected-list-ef" class="selected-list"></div>
+        <div class="stale-hint" id="stale-hint-ef" hidden>⚠️ รายชื่อเปลี่ยนไปจากสายแข่งปัจจุบัน กด "สร้างสายแข่ง" เพื่อสุ่มใหม่</div>
+        <div class="btn-group">
+          <button class="lens lens-primary" onclick="generateBracket('ef')">🎲 สร้างสายแข่ง</button>
+          <button class="lens lens-danger" onclick="confirmReset('ef')">ล้างข้อมูล</button>
+        </div>
       </div>
-      <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
-      <div id="selected-list-ff" class="selected-list"></div>
-      <div class="stale-hint" id="stale-hint-ff" hidden>⚠️ รายชื่อเปลี่ยนไปจากตารางปัจจุบัน กด "สร้าง/อัปเดตตาราง" (คะแนนเดิมของทีมที่ยังอยู่จะไม่หาย)</div>
-      <div class="btn-group">
-        <button class="btn-primary" onclick="generateFFTable()">🪂 สร้าง/อัปเดตตาราง</button>
-        <button class="btn-reset" onclick="confirmReset('ff')">ล้างข้อมูล</button>
+      <div class="podium-box glass" id="podium-ef">
+        <div class="podium-title">🏆 Tournament Medalists</div>
+        <div class="medals-grid">
+          <div class="medal-card gold"><div class="medal-icon">🥇</div><div class="medal-type">เหรียญทอง</div><div class="medal-player" id="gold-ef">-</div></div>
+          <div class="medal-card silver"><div class="medal-icon">🥈</div><div class="medal-type">เหรียญเงิน</div><div class="medal-player" id="silver-ef">-</div></div>
+          <div class="medal-card bronze"><div class="medal-icon">🥉</div><div class="medal-type">เหรียญทองแดง</div><div class="medal-player" id="bronze-ef">-</div></div>
+        </div>
+      </div>
+      <div class="bracket-wrapper" id="wrapper-ef"><svg class="connector-svg" id="svg-ef"></svg></div>
+    </div>
+
+    <!-- ================= RoV ================= -->
+    <div id="module-rov" class="module">
+      <button class="lens lens-sm rules-btn" onclick="openRulesModal('rov')">📜 กติกา Garena RoV ฉบับเต็ม</button>
+      <div class="control-panel glass">
+        <div class="panel-label">🛡️ ทีมที่เข้าแข่งขัน<span class="entrant-count" id="entrant-count-rov"></span></div>
+        <select id="profilePicker-rov" class="field" aria-label="เลือกทีม" onchange="addProfileToGame('rov', this.value)"></select>
+        <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
+        <div id="selected-list-rov" class="selected-list"></div>
+        <div class="stale-hint" id="stale-hint-rov" hidden>⚠️ รายชื่อเปลี่ยนไปจากสายแข่งปัจจุบัน กด "สร้างสายแข่ง" เพื่อสุ่มใหม่</div>
+        <div class="btn-group">
+          <button class="lens lens-primary" onclick="generateBracket('rov')">⚔️ สร้างสายแข่ง</button>
+          <button class="lens lens-danger" onclick="confirmReset('rov')">ล้างข้อมูล</button>
+        </div>
+      </div>
+      <div class="podium-box glass" id="podium-rov">
+        <div class="podium-title">🏆 Tournament Medalists</div>
+        <div class="medals-grid">
+          <div class="medal-card gold"><div class="medal-icon">🥇</div><div class="medal-type">เหรียญทอง</div><div class="medal-player" id="gold-rov">-</div></div>
+          <div class="medal-card silver"><div class="medal-icon">🥈</div><div class="medal-type">เหรียญเงิน</div><div class="medal-player" id="silver-rov">-</div></div>
+          <div class="medal-card bronze"><div class="medal-icon">🥉</div><div class="medal-type">เหรียญทองแดง</div><div class="medal-player" id="bronze-rov">-</div></div>
+        </div>
+      </div>
+      <div class="bracket-wrapper" id="wrapper-rov"><svg class="connector-svg" id="svg-rov"></svg></div>
+    </div>
+
+    <!-- ================= Free Fire ================= -->
+    <div id="module-ff" class="module">
+      <button class="lens lens-sm rules-btn" onclick="openRulesModal('ff')">📜 กติกา Free Fire ฉบับเต็ม</button>
+      <div class="control-panel glass">
+        <div class="panel-label">🪂 ทีมที่เข้าแข่งขัน<span class="entrant-count" id="entrant-count-ff"></span></div>
+        <select id="profilePicker-ff" class="field" aria-label="เลือกทีม" onchange="addProfileToGame('ff', this.value)"></select>
+        <div class="selected-hint">เลือกจากกล่องด้านบนเพื่อเพิ่ม • กด × เพื่อนำออก</div>
+        <div id="selected-list-ff" class="selected-list"></div>
+        <div class="stale-hint" id="stale-hint-ff" hidden>⚠️ รายชื่อเปลี่ยนไปจากตารางปัจจุบัน กด "สร้าง/อัปเดตตาราง" (คะแนนเดิมของทีมที่ยังอยู่จะไม่หาย)</div>
+        <div class="btn-group">
+          <button class="lens lens-primary" onclick="generateFFTable()">🪂 สร้าง/อัปเดตตาราง</button>
+          <button class="lens lens-danger" onclick="confirmReset('ff')">ล้างข้อมูล</button>
+        </div>
+      </div>
+      <div class="podium-box glass" id="podium-ff">
+        <div class="podium-title">🏆 Free Fire Top 3</div>
+        <div class="medals-grid">
+          <div class="medal-card gold"><div class="medal-icon">🥇</div><div class="medal-type">Champion</div><div class="medal-player" id="gold-ff">-</div></div>
+          <div class="medal-card silver"><div class="medal-icon">🥈</div><div class="medal-type">2nd Place</div><div class="medal-player" id="silver-ff">-</div></div>
+          <div class="medal-card bronze"><div class="medal-icon">🥉</div><div class="medal-type">3rd Place</div><div class="medal-player" id="bronze-ff">-</div></div>
+        </div>
+      </div>
+      <p class="ff-admin-hint">โหมดกรรมการ: แถวเรียงตามลำดับที่ลงทะเบียนเพื่อให้กรอกง่าย • ช่องสีแดง = อันดับซ้ำในแมตช์เดียวกัน</p>
+      <div class="table-responsive glass">
+        <table id="table-ff">
+          <thead>
+            <tr>
+              <th rowspan="2">Rank</th><th rowspan="2" class="th-left">Team</th><th colspan="2">Match 1</th><th colspan="2">Match 2</th><th colspan="2">Match 3</th><th rowspan="2">Booyah</th><th rowspan="2">Kills</th><th rowspan="2">Points</th>
+            </tr>
+            <tr><th>อันดับ</th><th>Kill</th><th>อันดับ</th><th>Kill</th><th>อันดับ</th><th>Kill</th></tr>
+          </thead>
+          <tbody id="tbody-ff"></tbody>
+        </table>
       </div>
     </div>
-    <div class="podium-box" id="podium-ff">
-      <div class="podium-title">🏆 FREE FIRE TOP 3</div>
-      <div class="medals-grid">
-        <div class="medal-card"><div class="medal-icon">🥇</div><div class="medal-type gold">CHAMPION</div><div class="medal-player" id="gold-ff">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥈</div><div class="medal-type silver">2ND PLACE</div><div class="medal-player" id="silver-ff">-</div></div>
-        <div class="medal-card"><div class="medal-icon">🥉</div><div class="medal-type bronze">3RD PLACE</div><div class="medal-player" id="bronze-ff">-</div></div>
-      </div>
-    </div>
-    <p class="ff-admin-hint">โหมดกรรมการ: แถวเรียงตามลำดับที่ลงทะเบียนเพื่อให้กรอกง่าย • ช่องสีแดง = อันดับซ้ำในแมตช์เดียวกัน</p>
-    <div class="table-responsive">
-      <table id="table-ff">
-        <thead>
-          <tr>
-            <th rowspan="2">Rank</th><th rowspan="2" style="text-align: left;">Team Name</th><th colspan="2">Match 1</th><th colspan="2">Match 2</th><th colspan="2">Match 3</th><th rowspan="2">Booyahs</th><th rowspan="2">Total Kills</th><th rowspan="2">Total Points</th>
-          </tr>
-          <tr><th>อันดับ</th><th>Kills</th><th>อันดับ</th><th>Kills</th><th>อันดับ</th><th>Kills</th></tr>
-        </thead>
-        <tbody id="tbody-ff"></tbody>
-      </table>
-    </div>
-  </div>
+  </main>
+
+  <footer class="site-footer">DBC NextGen E-Sport • Digital Business Computer</footer>
 
   <!-- ================= Modals ================= -->
   <div id="rulesModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -178,20 +214,87 @@
     </div>
   </div>
 
+  <!-- ลงทะเบียนนักกีฬา (สาธารณะ) -->
+  <div id="registerModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="ปิด">&times;</button>
+      <div class="modal-title" id="registerTitle">📝 ลงทะเบียนนักกีฬา</div>
+      <form id="registerForm" class="profile-form" onsubmit="submitRegistration(event)" novalidate>
+        <div class="full">
+          <div class="segmented" role="radiogroup" aria-label="ประเภทการลงทะเบียน">
+            <label><input type="radio" name="kind" value="player" checked onchange="syncRegisterForm()"><span>👤 ผู้เล่นเดี่ยว</span></label>
+            <label><input type="radio" name="kind" value="team" onchange="syncRegisterForm()"><span>🛡️ ทีม</span></label>
+          </div>
+        </div>
+        <div><label for="regGame">เกมที่สมัคร *</label><select id="regGame" name="game" class="field" required></select></div>
+        <div><label for="regName" id="regNameLabel">ชื่อในเกม (IGN) *</label><input id="regName" name="name" class="field" required maxlength="40" autocomplete="nickname"></div>
+        <div><label for="regRealName" id="regRealLabel">ชื่อ-นามสกุลจริง *</label><input id="regRealName" name="realname" class="field" required maxlength="80" autocomplete="name"></div>
+        <div><label for="regStudentId">รหัสนักศึกษา</label><input id="regStudentId" name="student_id" class="field" maxlength="20" inputmode="numeric"></div>
+        <div class="only-player"><label for="regTeam">สังกัดทีม (ถ้ามี)</label><input id="regTeam" name="team" class="field" maxlength="40" list="regTeamList"><datalist id="regTeamList"></datalist></div>
+        <div class="only-player"><label for="regRole">ตำแหน่ง / Role</label><input id="regRole" name="role" class="field" maxlength="40" placeholder="เช่น Mid, Carry, FW"></div>
+        <div class="full only-team"><label for="regMembers">รายชื่อสมาชิกในทีม *</label><textarea id="regMembers" name="members" class="field" maxlength="1000" placeholder="บรรทัดละ 1 คน: ชื่อในเกม (ชื่อจริง)"></textarea></div>
+        <div class="full"><label for="regContact">ช่องทางติดต่อ *</label><input id="regContact" name="contact" class="field" required maxlength="100" placeholder="เบอร์โทร หรือ LINE ID"></div>
+        <div class="full"><label for="regAvatar">ลิงก์รูปโปรไฟล์ / โลโก้</label><input id="regAvatar" name="avatar" class="field" type="url" maxlength="500" placeholder="https://drive.google.com/file/d/…"><div class="form-hint">รองรับลิงก์ Google Drive (แชร์แบบ "ทุกคนที่มีลิงก์")</div></div>
+        <div class="full"><label for="regBio">แนะนำตัว / ข้อความถึงกรรมการ</label><textarea id="regBio" name="bio" class="field" maxlength="1000"></textarea></div>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="full consent"><input type="checkbox" id="regConsent" required> <span>ยินยอมให้คณะกรรมการใช้ข้อมูลนี้เพื่อจัดการแข่งขัน (ชื่อจริง รหัสนักศึกษา และช่องทางติดต่อ เห็นเฉพาะกรรมการ)</span></label>
+        <div class="full form-actions"><button type="button" class="lens" data-close-modal>ยกเลิก</button><button class="lens lens-primary" type="submit">ส่งคำขอลงทะเบียน</button></div>
+      </form>
+      <div id="registerDone" class="done-state" hidden>
+        <div class="done-icon">✅</div>
+        <h3>ส่งคำขอเรียบร้อย</h3>
+        <p>กรรมการจะตรวจสอบและอนุมัติ เมื่ออนุมัติแล้วโปรไฟล์ของคุณจะแสดงในหน้าเว็บ</p>
+        <div class="form-actions center"><button type="button" class="lens" onclick="openRegister()">ลงทะเบียนอีกคน</button><button type="button" class="lens lens-primary" data-close-modal>ปิด</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- กรรมการ: เข้าสู่ระบบ / สมัคร -->
+  <div id="authModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="modal-content narrow">
+      <button class="modal-close" aria-label="ปิด">&times;</button>
+      <div class="modal-title" id="authTitle">🔒 กรรมการ</div>
+      <div class="segmented tabs" id="authTabs" role="tablist">
+        <button type="button" role="tab" data-auth-tab="login" aria-selected="true">เข้าสู่ระบบ</button>
+        <button type="button" role="tab" data-auth-tab="signup" aria-selected="false">สมัครเป็นกรรมการ</button>
+      </div>
+      <form id="loginForm" class="stack-form" onsubmit="submitLogin(event)">
+        <div class="auth-email"><label for="loginEmail">อีเมล</label><input id="loginEmail" name="email" class="field" type="email" autocomplete="username"></div>
+        <div class="auth-email"><label for="loginPassword">รหัสผ่าน</label><input id="loginPassword" name="password" class="field" type="password" autocomplete="current-password"></div>
+        <div class="auth-passcode"><label for="loginPasscode">รหัสผ่านกรรมการ</label><input id="loginPasscode" name="passcode" class="field" type="password" autocomplete="current-password"></div>
+        <div class="form-error" id="loginError" hidden></div>
+        <button class="lens lens-primary block" type="submit">เข้าสู่ระบบ</button>
+      </form>
+      <form id="signupForm" class="stack-form" onsubmit="submitSignup(event)" hidden>
+        <p class="form-note">สมัครแล้วต้องรอกรรมการที่มีอยู่อนุมัติก่อนจึงจะใช้งานได้</p>
+        <div><label for="signupName">ชื่อที่แสดง *</label><input id="signupName" name="name" class="field" required maxlength="80" autocomplete="name"></div>
+        <div><label for="signupEmail">อีเมล *</label><input id="signupEmail" name="email" class="field" type="email" required autocomplete="email"></div>
+        <div><label for="signupPassword">รหัสผ่าน * (อย่างน้อย 8 ตัว)</label><input id="signupPassword" name="password" class="field" type="password" required minlength="8" autocomplete="new-password"></div>
+        <div class="form-error" id="signupError" hidden></div>
+        <button class="lens lens-primary block" type="submit">สมัครเป็นกรรมการ</button>
+      </form>
+      <div id="signupDone" class="done-state" hidden>
+        <div class="done-icon">📧</div>
+        <h3>สมัครเรียบร้อย</h3>
+        <p id="signupDoneText"></p>
+      </div>
+    </div>
+  </div>
+
   <div id="playerFormModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="playerFormTitle">
     <div class="modal-content">
       <button class="modal-close" aria-label="ปิด">&times;</button>
       <div class="modal-title" id="playerFormTitle">👤 เพิ่มผู้เล่นใหม่</div>
       <form id="playerForm" class="profile-form" onsubmit="submitPlayer(event)">
         <input type="hidden" id="playerId">
-        <div><label for="playerGame">ประเภทเกม</label><select id="playerGame" required><option value="ef">⚽ eFootball</option><option value="rov">⚔️ Garena RoV</option><option value="ff">🪂 Free Fire</option></select></div>
-        <div><label for="playerName">ชื่อในเกม (IGN) *</label><input id="playerName" required maxlength="40" placeholder="เช่น THEBEST"></div>
-        <div><label for="playerRealName">ชื่อ-นามสกุลจริง 🔒</label><input id="playerRealName" maxlength="80" placeholder="เห็นเฉพาะกรรมการ"></div>
-        <div><label for="playerRole">Role / ตำแหน่ง 🔒</label><input id="playerRole" maxlength="40" placeholder="เช่น Mid, Carry…"></div>
-        <div class="full"><label for="playerTeam">สังกัดทีม</label><input id="playerTeam" list="teamSuggestions" maxlength="40" placeholder="เลือกหรือพิมพ์ชื่อทีม"><datalist id="teamSuggestions"></datalist></div>
-        <div class="full"><label for="playerAvatar">รูปภาพ Profile</label><input id="playerAvatar" type="url" placeholder="https://drive.google.com/file/d/…"><div class="form-hint">รองรับลิงก์ Google Drive (ต้องแชร์แบบ "ทุกคนที่มีลิงก์")</div></div>
-        <div class="full"><label for="playerBio">Bio / แนะนำตัว 🔒</label><textarea id="playerBio" maxlength="1000" placeholder="ประวัติย่อของนักกีฬา…"></textarea></div>
-        <div class="full form-actions"><button type="button" class="profile-btn" data-close-modal>ยกเลิก</button><button class="btn-primary" type="submit">💾 บันทึกผู้เล่น</button></div>
+        <div><label for="playerGame">ประเภทเกม</label><select id="playerGame" class="field" required><option value="ef">⚽ eFootball</option><option value="rov">⚔️ Garena RoV</option><option value="ff">🪂 Free Fire</option></select></div>
+        <div><label for="playerName">ชื่อในเกม (IGN) *</label><input id="playerName" class="field" required maxlength="40" placeholder="เช่น THEBEST"></div>
+        <div><label for="playerRealName">ชื่อ-นามสกุลจริง 🔒</label><input id="playerRealName" class="field" maxlength="80" placeholder="เห็นเฉพาะกรรมการ"></div>
+        <div><label for="playerRole">Role / ตำแหน่ง 🔒</label><input id="playerRole" class="field" maxlength="40" placeholder="เช่น Mid, Carry…"></div>
+        <div class="full"><label for="playerTeam">สังกัดทีม</label><input id="playerTeam" class="field" list="teamSuggestions" maxlength="40" placeholder="เลือกหรือพิมพ์ชื่อทีม"><datalist id="teamSuggestions"></datalist></div>
+        <div class="full"><label for="playerAvatar">รูปภาพ Profile</label><input id="playerAvatar" class="field" type="url" placeholder="https://drive.google.com/file/d/…"><div class="form-hint">รองรับลิงก์ Google Drive (ต้องแชร์แบบ "ทุกคนที่มีลิงก์")</div></div>
+        <div class="full"><label for="playerBio">Bio / แนะนำตัว 🔒</label><textarea id="playerBio" class="field" maxlength="1000" placeholder="ประวัติย่อของนักกีฬา…"></textarea></div>
+        <div class="full form-actions"><button type="button" class="lens" data-close-modal>ยกเลิก</button><button class="lens lens-primary" type="submit">💾 บันทึกผู้เล่น</button></div>
       </form>
     </div>
   </div>
@@ -202,13 +305,13 @@
       <div class="modal-title" id="teamFormTitle">🛡️ เพิ่มทีมใหม่</div>
       <form id="teamForm" class="profile-form" onsubmit="submitTeam(event)">
         <input type="hidden" id="teamId">
-        <div><label for="teamGame">ประเภทเกม</label><select id="teamGame" required><option value="rov">⚔️ Garena RoV</option><option value="ff">🪂 Free Fire</option></select></div>
-        <div><label for="teamName">ชื่อทีม (Team Name) *</label><input id="teamName" required maxlength="40" placeholder="เช่น DBC WARRIORS"></div>
-        <div class="full"><label for="teamRealName">ชื่อกัปตันทีม / ผู้จัดการ 🔒</label><input id="teamRealName" maxlength="80" placeholder="เห็นเฉพาะกรรมการ"></div>
-        <div class="full"><label for="teamMembers">รายชื่อสมาชิกอื่นๆ (ที่ไม่มีโปรไฟล์)</label><textarea id="teamMembers" maxlength="1000" placeholder="บรรทัดละ 1 ชื่อ"></textarea><div class="form-hint">ผู้เล่นที่ใส่ "สังกัดทีม" ตรงกับชื่อทีมนี้จะแสดงเป็นสมาชิกอัตโนมัติ</div></div>
-        <div class="full"><label for="teamAvatar">โลโก้ทีม</label><input id="teamAvatar" type="url" placeholder="https://drive.google.com/file/d/…"></div>
-        <div class="full"><label for="teamBio">Bio / สโลแกนทีม 🔒</label><textarea id="teamBio" maxlength="1000" placeholder="ประวัติทีมหรือสโลแกน…"></textarea></div>
-        <div class="full form-actions"><button type="button" class="profile-btn" data-close-modal>ยกเลิก</button><button class="btn-primary" type="submit">💾 บันทึกทีม</button></div>
+        <div><label for="teamGame">ประเภทเกม</label><select id="teamGame" class="field" required><option value="rov">⚔️ Garena RoV</option><option value="ff">🪂 Free Fire</option></select></div>
+        <div><label for="teamName">ชื่อทีม (Team Name) *</label><input id="teamName" class="field" required maxlength="40" placeholder="เช่น DBC WARRIORS"></div>
+        <div class="full"><label for="teamRealName">ชื่อกัปตันทีม / ผู้จัดการ 🔒</label><input id="teamRealName" class="field" maxlength="80" placeholder="เห็นเฉพาะกรรมการ"></div>
+        <div class="full"><label for="teamMembers">รายชื่อสมาชิกอื่นๆ (ที่ไม่มีโปรไฟล์)</label><textarea id="teamMembers" class="field" maxlength="1000" placeholder="บรรทัดละ 1 ชื่อ"></textarea><div class="form-hint">ผู้เล่นที่ใส่ "สังกัดทีม" ตรงกับชื่อทีมนี้จะแสดงเป็นสมาชิกอัตโนมัติ</div></div>
+        <div class="full"><label for="teamAvatar">โลโก้ทีม</label><input id="teamAvatar" class="field" type="url" placeholder="https://drive.google.com/file/d/…"></div>
+        <div class="full"><label for="teamBio">Bio / สโลแกนทีม 🔒</label><textarea id="teamBio" class="field" maxlength="1000" placeholder="ประวัติทีมหรือสโลแกน…"></textarea></div>
+        <div class="full form-actions"><button type="button" class="lens" data-close-modal>ยกเลิก</button><button class="lens lens-primary" type="submit">💾 บันทึกทีม</button></div>
       </form>
     </div>
   </div>
@@ -225,6 +328,7 @@
   <script src="js/ui.js"></script>
   <script src="js/rules.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/registration.js"></script>
   <script src="js/effects.js"></script>
 </body>
 </html>

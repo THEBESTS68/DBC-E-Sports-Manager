@@ -17,10 +17,27 @@ js/ui.js                        toast, dialog, modal
 js/rules.js                     กติกาการแข่งขันฉบับเต็ม
 js/app.js                       ระบบหลัก: สายแข่ง, ตาราง Free Fire, โปรไฟล์, ล็อกอิน
 js/effects.js                   เอฟเฟกต์ UI
-supabase/schema.sql             โครงสร้างฐานข้อมูล + สิทธิ์ (RLS) สำหรับ Supabase
+supabase/schema.sql             โครงสร้างฐานข้อมูล + สิทธิ์ (RLS)
+supabase/002_registration.sql   ระบบลงทะเบียนนักกีฬา + สมัครกรรมการ
+js/registration.js              ฟอร์มลงทะเบียน, ล็อกอิน/สมัครกรรมการ, แผงอนุมัติ
 scripts/migrate-firebase-to-supabase.mjs   สคริปต์ย้ายข้อมูล
 images/                         รูปพื้นหลังและไอคอน
 ```
+
+## ระบบลงทะเบียน
+
+- **นักกีฬา / ทีม** — กดปุ่ม "📝 ลงทะเบียนนักกีฬา" บนแถบด้านบน ไม่ต้องล็อกอิน
+  คำขอจะเข้าแผง "📥 คำขอที่รออนุมัติ" ของกรรมการ กดอนุมัติแล้วระบบสร้างโปรไฟล์ให้อัตโนมัติ
+  (ชื่อจริง รหัสนักศึกษา ช่องทางติดต่อ เห็นเฉพาะกรรมการ)
+- **กรรมการ** — ปุ่ม "🔒 กรรมการ" › แท็บ "สมัครเป็นกรรมการ" → ยืนยันอีเมล → รอกรรมการที่มีอยู่อนุมัติ
+- ฐานข้อมูล: `supabase/002_registration.sql` (ตาราง `registrations`, `admin_requests` + ฟังก์ชันอนุมัติ)
+- Supabase › Authentication › URL Configuration: Site URL = ลิงก์เว็บจริง (ลิงก์ยืนยันอีเมลจะพากลับมาที่นี่)
+- อีเมลยืนยันใช้ SMTP ฟรีของ Supabase ส่งได้ไม่กี่ฉบับต่อชั่วโมง ถ้ามีคนสมัครเยอะให้ตั้ง Custom SMTP
+
+## หน้าตา (Liquid Glass)
+
+`css/style.css` — แผงกระจก `.glass`, ปุ่มเลนส์ `.lens` (`lens-primary` / `lens-accent` / `lens-danger` / `lens-sm`)
+การหักเหแสงใช้ SVG filter `#liquid-lens` ทำงานใน Chrome / Edge / Brave ส่วน Safari / Firefox จะเป็นกระจกฝ้าปกติ
 
 ## รันบนเครื่อง
 

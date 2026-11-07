@@ -72,15 +72,15 @@
     el = document.createElement('div');
     el.id = 'dialogModal'; el.className = 'modal-overlay';
     el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-labelledby', 'dialogTitle');
-    el.innerHTML = `<div class="modal-content dialog-content">
+    el.innerHTML = `<div class="modal-content narrow">
       <button class="modal-close" aria-label="ปิด">&times;</button>
       <div class="modal-title" id="dialogTitle"></div>
       <form id="dialogForm" class="dialog-form">
         <div id="dialogBody" class="dialog-body"></div>
         <div id="dialogError" class="dialog-error" hidden></div>
         <div class="dialog-actions">
-          <button type="button" class="profile-btn" id="dialogCancel" data-close-modal>ยกเลิก</button>
-          <button type="submit" class="btn-primary" id="dialogOk">ตกลง</button>
+          <button type="button" class="lens" id="dialogCancel" data-close-modal>ยกเลิก</button>
+          <button type="submit" class="lens lens-primary" id="dialogOk">ตกลง</button>
         </div>
       </form>
     </div>`;
@@ -98,7 +98,7 @@
       fields.map(f => `<label class="dialog-field"><span>${escapeHTML(f.label)}</span>
         <input name="${f.name}" type="${f.type || 'text'}" autocomplete="${f.autocomplete || 'off'}" required></label>`).join('');
     const ok = el.querySelector('#dialogOk');
-    ok.textContent = okText; ok.classList.toggle('danger', danger); ok.disabled = false;
+    ok.textContent = okText; ok.classList.toggle('lens-danger', danger); ok.classList.toggle('lens-primary', !danger); ok.disabled = false;
     el.querySelector('#dialogCancel').textContent = cancelText;
     const err = el.querySelector('#dialogError'); err.hidden = true;
 
