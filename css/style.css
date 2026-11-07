@@ -85,15 +85,20 @@ button { cursor: pointer; }
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 44px 44px;
   mask-image: radial-gradient(ellipse at 50% 30%, #000 30%, transparent 80%);
 }
+/* วงแสงใช้ radial-gradient ที่ขอบนุ่มอยู่แล้ว แทน filter: blur(90px) ซึ่งหนักมากบนมือถือ */
 .aurora span {
-  position: absolute; width: 52vmax; height: 52vmax; border-radius: 50%;
-  filter: blur(90px); opacity: 0.42; mix-blend-mode: screen;
-  transition: background 1.2s var(--smooth);
+  position: absolute; width: 80vmax; height: 80vmax; border-radius: 50%;
+  opacity: 0.55;
   animation: drift 26s ease-in-out infinite alternate;
 }
-.aurora span:nth-child(1) { background: var(--blob-1); top: -18vmax; left: -12vmax; }
-.aurora span:nth-child(2) { background: var(--blob-2); top: 20vh; right: -20vmax; animation-duration: 32s; animation-delay: -8s; }
-.aurora span:nth-child(3) { background: var(--blob-3); bottom: -26vmax; left: 20vw; opacity: 0.28; animation-duration: 38s; animation-delay: -16s; }
+.aurora span:nth-child(1) { background: radial-gradient(closest-side, var(--blob-1), transparent); top: -32vmax; left: -26vmax; }
+.aurora span:nth-child(2) { background: radial-gradient(closest-side, var(--blob-2), transparent); top: 6vh; right: -36vmax; animation-duration: 32s; animation-delay: -8s; }
+.aurora span:nth-child(3) { background: radial-gradient(closest-side, var(--blob-3), transparent); bottom: -42vmax; left: 4vw; opacity: 0.32; animation-duration: 38s; animation-delay: -16s; }
+/* ให้สีวงแสงเปลี่ยนแบบนุ่มนวลเมื่อสลับเกม */
+@property --blob-1 { syntax: '<color>'; inherits: true; initial-value: #6d3bff; }
+@property --blob-2 { syntax: '<color>'; inherits: true; initial-value: #00b3ff; }
+@property --blob-3 { syntax: '<color>'; inherits: true; initial-value: #19e28a; }
+body { transition: --blob-1 1.2s var(--smooth), --blob-2 1.2s var(--smooth), --blob-3 1.2s var(--smooth); }
 @keyframes drift {
   0% { transform: translate3d(0, 0, 0) scale(1); }
   50% { transform: translate3d(6vmax, 4vmax, 0) scale(1.12); }
@@ -258,7 +263,6 @@ textarea.field { min-height: 110px; resize: vertical; line-height: 1.5; }
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   transition: transform 0.45s var(--spring), box-shadow 0.35s ease, border-color 0.35s ease;
-  will-change: transform;
 }
 .game-card.ef { --card-rgb: 54, 241, 154; }
 .game-card.rov { --card-rgb: 255, 84, 104; }
@@ -590,6 +594,35 @@ button.member-tag:hover { border-color: rgba(var(--primary-rgb), 0.6); backgroun
 @media (max-width: 680px) {
   .show-sm { display: inline; }
 }
+
+/* ---------- Performance: มือถือ / แท็บเล็ต ----------
+   ต้นทุนหลักคือ backdrop-filter ที่ต้องเบลอใหม่ทุกเฟรมเมื่อพื้นหลังขยับหรือเลื่อนหน้า
+   บนจอสัมผัส: พื้นหลังนิ่ง + กระจกแบบโปร่งแสงทึบขึ้น (ไม่เบลอสด) คงความสวยไว้ด้วยไล่สี/ขอบสะท้อนแสง
+   เหลือ blur สดแค่แถบด้านบนจุดเดียว */
+@media (hover: none), (max-width: 768px) {
+  :root {
+    --glass-bg: linear-gradient(135deg, rgba(58, 52, 86, 0.62), rgba(24, 22, 40, 0.58));
+    --glass-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.04), 0 10px 26px rgba(0, 0, 0, 0.32);
+  }
+  .aurora span { animation: none; }
+  .aurora::after { display: none; }
+  .glass, .game-card, .match-box, .lens, .toast, .modal-content, .modal-overlay {
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .topbar { -webkit-backdrop-filter: blur(12px) saturate(160%); backdrop-filter: blur(12px) saturate(160%); }
+  .match-box { background: linear-gradient(135deg, rgba(58, 52, 86, 0.6), rgba(24, 22, 40, 0.56)); }
+  .lens { background:
+    radial-gradient(140% 120% at 30% 0%, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.05) 45%, transparent 70%),
+    linear-gradient(180deg, rgba(var(--lens-tint), calc(var(--lens-tint-a) + 0.12)), rgba(var(--lens-tint), calc(var(--lens-tint-a) + 0.05))); }
+  .lens-primary { --lens-tint-a: 0.82; }
+  .modal-overlay { background: rgba(6, 5, 14, 0.72); }
+  .modal-content { background: linear-gradient(145deg, rgba(44, 40, 66, 0.97), rgba(18, 16, 30, 0.98)); }
+  .toast { background: linear-gradient(145deg, rgba(44, 40, 66, 0.97), rgba(18, 16, 30, 0.98)); }
+  .status-pill::before { animation: none; }
+  .lens:hover, .game-card:hover, .profile-card:hover { transform: none; }
+}
+/* วาดเฉพาะส่วนที่อยู่บนจอ (รายการโปรไฟล์ยาว) */
+.profile-grid { content-visibility: auto; contain-intrinsic-size: auto 480px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

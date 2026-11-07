@@ -9,7 +9,11 @@
   // Safari / Firefox ยังแสดงเป็นกระจกฝ้าปกติ
   const isChromium = !!(navigator.userAgentData && navigator.userAgentData.brands?.some(b => /Chromium/i.test(b.brand)));
   // (การหักเหเป็นภาพนิ่ง ไม่ใช่การเคลื่อนไหว จึงไม่ปิดตาม prefers-reduced-motion)
-  if (isChromium) document.documentElement.classList.add('lens-fx');
+  // ใช้ GPU หนัก จึงเปิดเฉพาะคอมพิวเตอร์ (เมาส์ + จอกว้าง) ไม่เปิดบนมือถือ/แท็บเล็ต
+  const desktop = matchMedia('(hover: hover) and (pointer: fine) and (min-width: 769px)');
+  const syncLens = () => document.documentElement.classList.toggle('lens-fx', isChromium && desktop.matches);
+  syncLens();
+  desktop.addEventListener?.('change', syncLens);
 
   // ไฮไลต์เลนส์เคลื่อนตามตำแหน่งนิ้ว/เมาส์
   document.addEventListener('pointermove', e => {

@@ -6,10 +6,13 @@
   <meta name="theme-color" content="#07060f">
   <meta name="description" content="ระบบจัดการทัวร์นาเมนต์ E-Sport ของชมรม DBC NextGen — eFootball, Garena RoV, Free Fire">
   <title>DBC NextGen E-Sport - Tournament Manager</title>
-  <link rel="icon" href="images/icon.png" type="image/png">
+  <link rel="icon" href="images/favicon-64.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Prompt:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://wlejrrxuwkyozecvfnnz.supabase.co" crossorigin>
+  <link rel="preload" href="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" as="script" crossorigin>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-theme="default" class="viewer-mode">
@@ -28,7 +31,7 @@
 
   <nav class="topbar glass">
     <a href="https://www.facebook.com/share/1KJfy95NLv/?mibextid=wwXIfr" target="_blank" rel="noopener" class="brand" id="navBadge">
-      <img src="images/icon.png" alt="" class="brand-logo"><span>DBC NextGen <b>E-Sport</b></span>
+      <img src="images/logo-96.webp" alt="" class="brand-logo" width="34" height="34"><span>DBC NextGen <b>E-Sport</b></span>
     </a>
     <div class="topbar-actions">
       <span id="dbStatus" class="status-pill" role="status">กำลังเชื่อมต่อ…</span>
@@ -46,25 +49,25 @@
   <main class="page">
     <div id="homeMenu">
       <div class="game-card ef" role="button" tabindex="0" aria-label="เปิดระบบ eFootball" onclick="openGame('ef')">
-        <div class="game-cover"><img src="images/efootball.jpg" alt="" loading="lazy"></div>
+        <div class="game-cover"><img src="images/efootball-480.webp" srcset="images/efootball-480.webp 480w, images/efootball-800.webp 800w" sizes="(max-width: 680px) 92vw, (max-width: 1000px) 46vw, 380px" width="800" height="600" alt="" decoding="async" fetchpriority="high"></div>
         <div class="game-caption">
-          <img class="game-icon" src="images/icon-ef.png" alt="">
+          <img class="game-icon" src="images/icon-ef.webp" width="46" height="46" alt="" loading="lazy" decoding="async">
           <div><div class="game-title">eFootball</div><div class="game-desc">1 vs 1 • Single Elimination BO3</div></div>
           <span class="game-go" aria-hidden="true">→</span>
         </div>
       </div>
       <div class="game-card rov" role="button" tabindex="0" aria-label="เปิดระบบ Garena RoV" onclick="openGame('rov')">
-        <div class="game-cover"><img src="images/rov.jpg" alt="" loading="lazy"></div>
+        <div class="game-cover"><img src="images/rov-480.webp" srcset="images/rov-480.webp 480w, images/rov-800.webp 800w" sizes="(max-width: 680px) 92vw, (max-width: 1000px) 46vw, 380px" width="800" height="600" alt="" decoding="async" loading="lazy"></div>
         <div class="game-caption">
-          <img class="game-icon" src="images/icon-rov.png" alt="">
+          <img class="game-icon" src="images/icon-rov.webp" width="46" height="46" alt="" loading="lazy" decoding="async">
           <div><div class="game-title">Garena RoV</div><div class="game-desc">5 vs 5 • Single Elimination BO3</div></div>
           <span class="game-go" aria-hidden="true">→</span>
         </div>
       </div>
       <div class="game-card ff" role="button" tabindex="0" aria-label="เปิดระบบ Free Fire" onclick="openGame('ff')">
-        <div class="game-cover"><img src="images/freefire.jpg" alt="" loading="lazy"></div>
+        <div class="game-cover"><img src="images/freefire-480.webp" srcset="images/freefire-480.webp 480w, images/freefire-800.webp 800w" sizes="(max-width: 680px) 92vw, (max-width: 1000px) 46vw, 380px" width="800" height="600" alt="" decoding="async" loading="lazy"></div>
         <div class="game-caption">
-          <img class="game-icon" src="images/icon-ff.png" alt="">
+          <img class="game-icon" src="images/icon-ff.webp" width="46" height="46" alt="" loading="lazy" decoding="async">
           <div><div class="game-title">Free Fire</div><div class="game-desc">Squad • คะแนนสะสม 3 แมตช์</div></div>
           <span class="game-go" aria-hidden="true">→</span>
         </div>

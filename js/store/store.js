@@ -54,6 +54,7 @@
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const s = document.createElement('script');
+      if (/^https?:/.test(src)) s.crossOrigin = 'anonymous'; // ให้ใช้ไฟล์ที่ <link rel="preload"> โหลดไว้แล้วได้
       s.src = src; s.onload = resolve; s.onerror = () => reject(new Error('โหลดสคริปต์ไม่สำเร็จ: ' + src));
       document.head.appendChild(s);
     });
