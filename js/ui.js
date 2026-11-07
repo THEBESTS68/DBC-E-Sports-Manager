@@ -16,17 +16,28 @@
 
   // ---------- Modal ----------
   let lastFocus = null;
+  const isTouch = matchMedia('(hover: none)').matches;
   function openModal(id) {
     lastFocus = document.activeElement;
     const el = document.getElementById(id);
+    const content = el.querySelector('.modal-content');
+    // ที่จับสำหรับลากปิด (แสดงเฉพาะมือถือผ่าน CSS)
+    if (content && !content.querySelector(':scope > .sheet-handle')) {
+      content.insertAdjacentHTML('afterbegin', '<div class="sheet-handle" aria-hidden="true"></div>');
+    }
+    if (content) { content.style.transform = ''; content.scrollTop = 0; content.tabIndex = -1; }
     el.classList.add('active');
     document.body.style.overflow = 'hidden';
-    const focusable = el.querySelector('input:not([type=hidden]), select, textarea, button:not(.modal-close)') || el.querySelector('.modal-close');
-    setTimeout(() => focusable && focusable.focus(), 50);
+    // มือถือ: ไม่โฟกัสช่องกรอกอัตโนมัติ (คีย์บอร์ดจะเด้งขึ้นบังจอ)
+    const focusable = isTouch ? content
+      : el.querySelector('input:not([type=hidden]):not(.hp), select, textarea') || el.querySelector('.modal-close');
+    setTimeout(() => focusable && focusable.focus({ preventScroll: true }), 50);
   }
   function closeModal(id) {
     const el = document.getElementById(id);
     if (!el || !el.classList.contains('active')) return;
+    const content = el.querySelector('.modal-content');
+    if (content) content.classList.remove('dragging', 'snap');
     el.classList.remove('active');
     if (!document.querySelector('.modal-overlay.active')) document.body.style.overflow = '';
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus();
@@ -43,6 +54,44 @@
     if (e.key !== 'Escape') return;
     const open = [...document.querySelectorAll('.modal-overlay.active')].pop();
     if (open) closeModal(open.id);
+  });
+
+  // ---------- ลากลงเพื่อปิด (bottom sheet บนมือถือ) ----------
+  // เริ่มลากได้เมื่อแตะที่จับ หรือเนื้อหาเลื่อนอยู่บนสุดแล้ว
+  let drag = null;
+  document.addEventListener('touchstart', e => {
+    const content = e.target.closest?.('.modal-overlay.active .modal-content');
+    if (!content || e.touches.length !== 1 || !matchMedia('(max-width: 680px)').matches) return;
+    if (e.target.closest('input, textarea, select')) return;
+    const onHandle = !!e.target.closest('.sheet-handle');
+    if (!onHandle && content.scrollTop > 0) return;
+    drag = { content, y0: e.touches[0].clientY, t0: performance.now(), dy: 0, onHandle };
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!drag) return;
+    const dy = e.touches[0].clientY - drag.y0;
+    if (dy <= 0 && !drag.active) { drag = null; return; } // เลื่อนขึ้น = อ่านเนื้อหาตามปกติ
+    if (!drag.active && dy > 6) { drag.active = true; drag.content.classList.remove('snap'); drag.content.classList.add('dragging'); }
+    if (drag.active) {
+      drag.dy = Math.max(0, dy);
+      drag.content.style.transform = `translateY(${drag.dy}px)`;
+      if (e.cancelable) e.preventDefault();
+    }
+  }, { passive: false });
+  document.addEventListener('touchend', () => {
+    if (!drag) return;
+    const { content, dy, t0, active } = drag;
+    drag = null;
+    if (!active) return;
+    content.classList.remove('dragging');
+    content.classList.add('snap');
+    const fast = dy > 40 && dy / (performance.now() - t0) > 0.6;
+    if (dy > Math.min(140, content.offsetHeight * 0.25) || fast) {
+      content.style.transform = `translateY(${content.offsetHeight}px)`;
+      setTimeout(() => closeModal(content.closest('.modal-overlay').id), 200);
+    } else {
+      content.style.transform = '';
+    }
   });
 
   // ---------- Toast ----------
